@@ -18,6 +18,9 @@
     <Product>TopMostPin</Product>
     <AssemblyTitle>TopMostPin</AssemblyTitle>
 
+    <!-- 应用程序图标：同时用于 exe 文件本身和 WPF 窗口的默认图标 -->
+    <ApplicationIcon>assets\TopMostPin.ico</ApplicationIcon>
+
     <!-- 自定义清单：声明 DPI 感知，保证 GetCursorPos/GetWindowRect 返回真实物理像素 -->
     <ApplicationManifest>app.manifest</ApplicationManifest>
 

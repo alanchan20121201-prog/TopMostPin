@@ -13,3 +13,6 @@ obj/
 *.log
 
 # 说明：publish/ 目录里的单文件 exe 是需要提交的，不要忽略
+
+# 本地笔记/缓存
+.workbuddy/
