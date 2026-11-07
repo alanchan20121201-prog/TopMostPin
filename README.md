@@ -139,6 +139,20 @@ dotnet publish -c Release -r win-x64 --self-contained true \
 
 ## 许可证
 
-本项目采用 [MIT License](LICENSE)。
+本项目采用 [GNU General Public License v3.0](LICENSE)。
 
-可以自由使用、修改、分发（包括商业用途），只需保留原始版权声明。软件按"现状"提供，不附带任何担保。
+```
+Copyright (C) 2026 Alan
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+```
+
+简单说：你可以自由使用、修改、分发，但**如果分发修改后的版本，必须同样以 GPL-3.0 开源并提供完整源码**，且保留版权声明。
