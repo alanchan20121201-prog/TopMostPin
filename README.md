@@ -139,4 +139,6 @@ dotnet publish -c Release -r win-x64 --self-contained true \
 
 ## 许可证
 
-暂未指定。如果你打算让别人自由使用/修改，建议补一个 MIT 或 Apache-2.0 许可证文件。
+本项目采用 [MIT License](LICENSE)。
+
+可以自由使用、修改、分发（包括商业用途），只需保留原始版权声明。软件按"现状"提供，不附带任何担保。
