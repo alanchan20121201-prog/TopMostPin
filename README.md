@@ -17,21 +17,12 @@
 
 ## 快速开始
 
-### 方式一：直接用现成的 exe
+直接用现成的 exe
 
 仓库里的 `publish/TopMostPin.exe` 就是编译好的单文件版本，双击即可运行。
 
 > ⚠️ 这是**框架依赖**版本，需要机器上装有 **.NET 8 Desktop Runtime**（不是 SDK，只有运行时即可）。
 > 没装的话双击会提示找不到运行时，去这里下载：<https://dotnet.microsoft.com/download/dotnet/8.0> → ".NET Desktop Runtime 8.0.x"
-
-### 方式二：自己编译
-
-需要 .NET 8 SDK 或更高版本：
-
-```bash
-dotnet build -c Release
-dotnet run -c Release
-```
 
 ## 使用说明
 
