@@ -26,10 +26,16 @@ public sealed class HotkeyManager : IDisposable
 
     public HotkeyManager()
     {
-        // 创建一个隐藏窗口，仅用来接收 WM_HOTKEY。
-        // 用它而不是复用 WPF Window，是为了让快捷键和 UI 生命周期解耦。
+        // 只用来收消息的隐藏窗口。
+        //
+        // 关键：必须显式指定 WS_POPUP。
+        // 如果让 HwndSource 用默认样式创建，它是一个"带标题栏的普通窗口"，
+        // 而 Windows 对这类窗口有最小尺寸限制（约 160x27），0x0 会被强行撑开，
+        // 桌面上就会出现一条白色的空窗口 —— 正是曾经出现过的问题。
+        // WS_POPUP 没有标题栏、没有最小尺寸，0x0 就是真正的 0x0。
         var parameters = new HwndSourceParameters("TopMostPin.HotkeyMessageSink")
         {
+            WindowStyle = NativeMethods.WS_POPUP,
             Width = 0,
             Height = 0,
         };

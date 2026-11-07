@@ -59,10 +59,11 @@ public partial class ToastWindow : Window
     }
 
     /// <summary>
-    /// 预热：提前创建窗口和渲染栈。
-    /// WPF 首次 Show 需要建 HWND + 初始化渲染，约 60~100ms，
-    /// 放在第一次提示里会被感知成"卡一下"；挪到启动阶段做，用户完全看不到。
-    /// 预热全程 Opacity=0 且在屏幕外，不会闪现。
+    /// 预热：提前创建 XAML 和窗口句柄，省掉第一次提示时几十毫秒的初始化。
+    ///
+    /// 注意这里只做 EnsureHandle —— 绝不 Show()。
+    /// 分层（AllowsTransparency）窗口即使 Opacity=0，Show 过一次也可能在某些显卡驱动上
+    /// 留下一个白色的残留矩形，直到进程退出才消失。只建句柄就完全没有这个风险。
     /// </summary>
     public static void WarmUp()
     {
@@ -70,12 +71,8 @@ public partial class ToastWindow : Window
 
         _instance = new ToastWindow();
 
-        if (_instance._handle == IntPtr.Zero)
-        {
-            _instance.Show(); // Opacity 仍为 0，位置在 -20000，肉眼不可见
-        }
-
-        _instance.Conceal();
+        // 创建 HWND（会触发 OnSourceInitialized），但不显示、不渲染
+        new WindowInteropHelper(_instance).EnsureHandle();
     }
 
     protected override void OnSourceInitialized(EventArgs e)

@@ -42,6 +42,8 @@ internal static class NativeMethods
     public const int GWL_STYLE = -16;
     public const int GWL_EXSTYLE = -20;
     public const int WS_VISIBLE = 0x10000000;
+    /// <summary>弹出式窗口样式：没有标题栏、没有最小尺寸限制（0x0 就是真的 0x0）</summary>
+    public const int WS_POPUP = unchecked((int)0x80000000);
     public const int WS_CAPTION = 0x00C00000;          // 标题栏（含 ✕）
     public const int WS_SYSMENU = 0x00080000;          // 系统菜单（✕ 按钮的来源）
     public const int WS_THICKFRAME = 0x00040000;       // 可拖拽边框
