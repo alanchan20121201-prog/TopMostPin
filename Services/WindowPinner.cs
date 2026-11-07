@@ -20,6 +20,9 @@ namespace TopMostPin.Services;
 ///   检查方式是从目标窗口沿 Z 序往上找，看有没有可见且与它矩形相交的窗口。
 ///   只有真的被盖住才重新 SetWindowPos(HWND_TOPMOST, SWP_NOACTIVATE)；
 ///   如果盖住它的是独占全屏应用，则不再硬顶，改为提示用户"暂时无法保持置顶"。
+///
+/// 【高亮反馈】锁定成功时闪一下蓝色边框（保持 0.55s + 淡出 0.35s），随后自动回收，
+/// 不在窗口上留常驻边框 —— 避免长期遮挡窗口边缘，也避免多窗口时一堆框打架。
 /// </summary>
 public sealed class WindowPinner : IDisposable
 {
@@ -31,6 +34,12 @@ public sealed class WindowPinner : IDisposable
 
     /// <summary>高亮边框向外扩展的像素数</summary>
     private const int OverlayPadding = 3;
+
+    /// <summary>高亮闪光的保持时长（毫秒）</summary>
+    private const int HighlightHoldMs = 550;
+
+    /// <summary>高亮闪光的淡出时长（毫秒）</summary>
+    private const int HighlightFadeMs = 350;
 
     // 系统桌面 / 任务栏等保护窗口，这些窗口不允许置顶
     private static readonly string[] SkipWindowClasses =
@@ -59,8 +68,8 @@ public sealed class WindowPinner : IDisposable
     private DispatcherTimer? _heartbeatTimer;
 
     /// <summary>
-    /// 每个锁定窗口对应一个高亮边框窗口（窗口句柄 -> 边框）。
-    /// 必须"一窗一框"：共用同一个覆盖层时，两个窗口重叠就没法各自贴合自己的位置了。
+    /// 每个正在闪光的窗口对应一个高亮边框窗口（窗口句柄 -> 边框）。
+    /// 闪光是一次性的：淡出结束后立即回收，不会常驻贴在窗口上。
     /// </summary>
     private readonly Dictionary<IntPtr, HighlightWindow> _overlays = new();
 
@@ -144,8 +153,8 @@ public sealed class WindowPinner : IDisposable
         if (_lockedSet.Add(window))
         {
             _lockedWindows.Add(window);
-            StartHeartbeat();    // 有锁定窗口才开始心跳，无锁定时不占任何资源
-            ShowHighlight(window); // 立刻显示边框，不用等下一次心跳
+            StartHeartbeat();      // 有锁定窗口才开始心跳，无锁定时不占任何资源
+            FlashHighlight(window); // 闪一下边框，确认锁的是哪个窗口
             LockedCountChanged?.Invoke();
         }
     }
@@ -239,10 +248,10 @@ public sealed class WindowPinner : IDisposable
             }
 
             // 最小化中的窗口不处理，否则用户按最小化会被强行拉回来；
-            // 边框也一并藏起来，避免在原地留一个空框。
+            // 若此刻正好在闪光，顺手收掉，免得边框停在旧位置
             if (NativeMethods.IsIconic(window))
             {
-                HideHighlight(window, destroy: false);
+                HideHighlight(window, destroy: true);
                 continue;
             }
 
@@ -268,10 +277,6 @@ public sealed class WindowPinner : IDisposable
             // 若 coverer 是另一个"已锁定"的窗口：什么都不做。
             // 这是两个锁定窗口重叠时的关键：否则 A 顶掉 B、B 又顶掉 A，
             // 心跳每秒一次会变成持续的层级乱跳（闪烁）。同组窗口之间保持用户当前的相对顺序。
-
-            // 边框始终跟随目标窗口，并重新插到它正上方
-            //（上面那次 SetWindowPos 可能刚把目标窗口提到最前，边框会落到它下面）
-            ShowHighlight(window);
         }
     }
 
@@ -368,31 +373,42 @@ public sealed class WindowPinner : IDisposable
         MaintainTopmost();
     }
 
-    // ==================== 高亮边框 ====================
+    // ==================== 高亮闪光 ====================
 
     /// <summary>
-    /// 显示/更新目标窗口的高亮边框：按当前矩形摆放，并插到目标窗口正上方。
-    /// 每个锁定窗口各自一个边框窗口，所以多个窗口重叠时不会互相干扰。
+    /// 在目标窗口上闪一下高亮边框，作为"锁的是这个窗口"的确认反馈。
+    /// 保持 0.55 秒后淡出 0.35 秒，然后自动隐藏并回收，不在窗口上留下常驻边框。
     /// </summary>
-    private void ShowHighlight(IntPtr target)
+    private void FlashHighlight(IntPtr target)
     {
         if (!NativeMethods.GetWindowRect(target, out var rect)) return;
 
-        if (!_overlays.TryGetValue(target, out HighlightWindow? overlay))
-        {
-            // 边框窗口是懒创建的：没有锁定窗口时，程序里连一个 Window 对象都不存在
-            overlay = new HighlightWindow();
-            _overlays[target] = overlay;
-        }
+        // 同一窗口上一次闪光还没结束就先收掉，避免同时出现两个框
+        HideHighlight(target, destroy: true);
 
-        overlay.ShowAbove(target,
+        var overlay = new HighlightWindow();
+        _overlays[target] = overlay;
+
+        overlay.FlashAbove(target,
             rect.Left - OverlayPadding,
             rect.Top - OverlayPadding,
             rect.Width + OverlayPadding * 2,
-            rect.Height + OverlayPadding * 2);
+            rect.Height + OverlayPadding * 2,
+            HighlightHoldMs,
+            HighlightFadeMs,
+            () =>
+            {
+                // 动画结束后回收，避免长期占用窗口句柄
+                if (_overlays.TryGetValue(target, out HighlightWindow? current) && ReferenceEquals(current, overlay))
+                {
+                    _overlays.Remove(target);
+                }
+
+                overlay.CloseSafely();
+            });
     }
 
-    /// <summary>隐藏边框；destroy=true 时连窗口一起关掉（解锁、窗口销毁时用）。</summary>
+    /// <summary>立即收掉某个窗口的闪光；destroy=true 时连窗口一起关掉。</summary>
     private void HideHighlight(IntPtr target, bool destroy)
     {
         if (!_overlays.TryGetValue(target, out HighlightWindow? overlay)) return;
