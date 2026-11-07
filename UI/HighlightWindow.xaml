@@ -1,0 +1,32 @@
+<Window x:Class="TopMostPin.UI.HighlightWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TopMostPin.Highlight"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        ResizeMode="NoResize"
+        Focusable="False"
+        IsHitTestVisible="False"
+        Left="-20000"
+        Top="-20000"
+        Width="1"
+        Height="1"
+        Opacity="0">
+
+    <!-- 锁定窗口的高亮边框。
+         每个被锁定的窗口都有一个独立实例，并插在该窗口"正上方"的 Z 序位置，
+         所以两个窗口重叠时，上面的窗口会正常盖住下面的边框，不会出现"边框浮在最上层"的错觉。
+
+         默认 Opacity=0 + 1x1 + 屏幕外：创建后肉眼不可见，
+         只有摆到目标窗口位置后才设为 1。 -->
+    <Border x:Name="Frame"
+            BorderBrush="#FF29B6F6"
+            BorderThickness="2"
+            CornerRadius="3"
+            Background="#1129B6F6"
+            SnapsToDevicePixels="True" />
+</Window>

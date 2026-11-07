@@ -1,0 +1,19 @@
+<Application x:Class="TopMostPin.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             ShutdownMode="OnExplicitShutdown">
+    <!-- 纯托盘程序：
+         1) 刻意不写 StartupUri（不要加回来！）—— 一旦写了，启动时就会显示那个 XAML 窗口；
+         2) 项目里没有 MainWindow.xaml，也没有任何 <Window> 类型的启动窗口；
+         3) ShutdownMode=OnExplicitShutdown 保证关掉设置对话框后程序不会退出。 -->
+    <Application.Resources>
+        <ResourceDictionary>
+            <!-- 快捷键设置窗口的通用按钮样式（保持系统默认外观，不做花哨 UI） -->
+            <Style x:Key="DialogButton" TargetType="Button">
+                <Setter Property="Padding" Value="18,6" />
+                <Setter Property="Margin" Value="8,0,0,0" />
+                <Setter Property="MinWidth" Value="76" />
+            </Style>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
