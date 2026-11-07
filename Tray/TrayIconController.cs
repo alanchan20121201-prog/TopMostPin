@@ -81,11 +81,15 @@ public sealed class TrayIconController : IDisposable
         RefreshMenuState();
         RefreshBadge();
 
+        // 预热提示浮窗：把首次创建窗口的开销挪到启动阶段，
+        // 免得第一次按快捷键（比如对着任务管理器按）时卡一下。
+        ToastWindow.WarmUp();
+
         if (!TryApplyHotkey(_settings.ResolveHotkey()))
         {
             // 只弹托盘气泡：启动阶段绝不能弹出窗口挡住桌面。
             // 托盘菜单里对应项会显示"（未注册）"，用户可以自己点进去改。
-            ShowBalloon(Messages.HotkeyConflict, true);
+            ShowToast(Messages.HotkeyConflict, true);
         }
     }
 
@@ -128,7 +132,7 @@ public sealed class TrayIconController : IDisposable
                 _settings.Hotkey = registered.ToString();
                 _settings.Save();
 
-                ShowBalloon(string.Format(Messages.HotkeyChanged, registered), false);
+                ShowToast(string.Format(Messages.HotkeyChanged, registered), false);
             }
 
             RefreshMenuState();
@@ -143,11 +147,11 @@ public sealed class TrayIconController : IDisposable
 
         if (StartupManager.SetEnabled(target))
         {
-            ShowBalloon(target ? Messages.StartupEnabled : Messages.StartupDisabled, false);
+            ShowToast(target ? Messages.StartupEnabled : Messages.StartupDisabled, false);
         }
         else
         {
-            ShowBalloon(Messages.StartupFailed, true);
+            ShowToast(Messages.StartupFailed, true);
         }
 
         RefreshMenuState();
@@ -192,24 +196,23 @@ public sealed class TrayIconController : IDisposable
 
     private void OnPinNotify(string message, bool isWarning)
     {
-        ShowBalloon(message, isWarning);
+        ShowToast(message, isWarning);
     }
 
-    /// <summary>用托盘气泡提示，不抢焦点。</summary>
-    private void ShowBalloon(string message, bool isWarning)
+    /// <summary>
+    /// 用自绘浮窗提示：即时出现、不抢焦点、不依赖系统通知开关。
+    /// （托盘气泡在 Win11 上首次弹出有明显延迟，且系统通知关掉后完全不显示）
+    /// </summary>
+    private static void ShowToast(string message, bool isWarning)
     {
-        _notifyIcon.ShowBalloonTip(
-            3000,
-            Messages.AppTitle,
-            message,
-            isWarning ? ToolTipIcon.Warning : ToolTipIcon.Info);
+        ToastWindow.Show(message, isWarning);
     }
 
     private void ShowUsageHint()
     {
         HotkeyDefinition? hotkey = _hotkeyManager.Current;
 
-        ShowBalloon(hotkey == null
+        ShowToast(hotkey == null
             ? Messages.NoHotkeyRegistered
             : string.Format(Messages.UsageHint, hotkey), false);
     }
