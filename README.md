@@ -139,20 +139,22 @@ dotnet publish -c Release -r win-x64 --self-contained true \
 
 ## 许可证
 
-本项目采用 [GNU General Public License v3.0](LICENSE)。
+本项目采用 [Apache License 2.0](LICENSE)。
 
 ```
-Copyright (C) 2026 Alan
+Copyright 2026 Alan
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 ```
 
-简单说：你可以自由使用、修改、分发，但**如果分发修改后的版本，必须同样以 GPL-3.0 开源并提供完整源码**，且保留版权声明。
+简单说：可自由使用、修改、分发、闭源商用，**只需保留版权声明和许可证副本**；同时包含明确的专利授权条款，比 MIT 更适合担心专利风险的项目。
