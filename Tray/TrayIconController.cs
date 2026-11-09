@@ -173,7 +173,7 @@ public sealed class TrayIconController : IDisposable
         // 角标数字由 IconFactory 画到图标右下角；按数量缓存，不会泄漏 GDI 句柄
         _notifyIcon.Icon = _iconFactory.GetTrayIcon(count);
         _notifyIcon.Text = count > 0
-            ? $"{Messages.AppTitle}（已锁定 {count} 个窗口）"
+            ? $"{Messages.AppTitle}{string.Format(Messages.LockedCount, count)}"
             : Messages.AppTitle;
     }
 
@@ -183,11 +183,11 @@ public sealed class TrayIconController : IDisposable
         int lockedCount = _pinner.LockedCount;
 
         _hotkeyMenuItem.Text = hotkey == null
-            ? $"{Messages.MenuHotkey}（{Messages.HotkeyNotRegistered}）"
-            : $"{Messages.MenuHotkey}（{hotkey}）";
+            ? $"{Messages.MenuHotkey} ({Messages.HotkeyNotRegistered})"
+            : $"{Messages.MenuHotkey} ({hotkey})";
 
         _unlockAllMenuItem.Text = lockedCount > 0
-            ? $"{Messages.MenuUnlockAll}（{lockedCount}）"
+            ? $"{Messages.MenuUnlockAll} ({lockedCount})"
             : Messages.MenuUnlockAll;
         _unlockAllMenuItem.Enabled = lockedCount > 0;
 

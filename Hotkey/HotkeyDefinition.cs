@@ -1,5 +1,6 @@
 using System.Windows.Input;
 using TopMostPin.Interop;
+using TopMostPin.Services;
 
 namespace TopMostPin.Hotkey;
 
@@ -81,14 +82,14 @@ public sealed class HotkeyDefinition
         if (key is Key.None or Key.LeftCtrl or Key.RightCtrl or Key.LeftAlt or Key.RightAlt
             or Key.LeftShift or Key.RightShift or Key.LWin or Key.RWin or Key.System)
         {
-            error = "请再按一个普通按键（例如 T、F8、空格）";
+            error = Messages.HotkeyNeedNormalKey;
             return false;
         }
 
         int vk = KeyInterop.VirtualKeyFromKey(key);
         if (vk <= 0)
         {
-            error = "这个按键不支持注册为全局热键";
+            error = Messages.HotkeyUnsupported;
             return false;
         }
 
@@ -100,7 +101,7 @@ public sealed class HotkeyDefinition
 
         if (mods == 0)
         {
-            error = "请至少按住 Ctrl / Alt / Shift / Win 中的一个";
+            error = Messages.HotkeyNeedModifier;
             return false;
         }
 

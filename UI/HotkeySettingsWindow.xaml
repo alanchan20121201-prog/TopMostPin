@@ -14,8 +14,8 @@
 
     <StackPanel Margin="22">
 
-        <TextBlock Text="按下新的快捷键组合" FontWeight="SemiBold" Margin="0,0,0,4" />
-        <TextBlock Text="必须包含 Ctrl / Alt / Shift / Win 中的至少一个，按 Esc 取消。"
+        <TextBlock x:Name="DialogTitleText" Text="按下新的快捷键组合" FontWeight="SemiBold" Margin="0,0,0,4" />
+        <TextBlock x:Name="DialogRuleText" Text="必须包含 Ctrl / Alt / Shift / Win 中的至少一个，按 Esc 取消。"
                    Foreground="#FF6B7683" FontSize="12" TextWrapping="Wrap" Margin="0,0,0,10" />
 
         <!-- 快捷键录制框：只显示，不接受正常输入 -->
@@ -40,8 +40,8 @@
                    MinHeight="18" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
-            <Button Content="确定" Style="{StaticResource DialogButton}" IsDefault="True" Click="OnConfirmClick" />
-            <Button Content="取消" Style="{StaticResource DialogButton}" IsCancel="True" />
+            <Button x:Name="OkButton" Content="确定" Style="{StaticResource DialogButton}" IsDefault="True" Click="OnConfirmClick" />
+            <Button x:Name="CancelButton" Content="取消" Style="{StaticResource DialogButton}" IsCancel="True" />
         </StackPanel>
     </StackPanel>
 </Window>

@@ -23,11 +23,15 @@ public partial class HotkeySettingsWindow : Window
 
         _hotkeyManager = hotkeyManager;
 
-        Title = "修改快捷键";
+        Title = Messages.DialogTitle;
+        DialogTitleText.Text = Messages.DialogHint;
+        DialogRuleText.Text = Messages.DialogRule;
+        OkButton.Content = Messages.DialogOk;
+        CancelButton.Content = Messages.DialogCancel;
 
         _pending = hotkeyManager.Current;
 
-        ComboText.Text = _pending?.ToString() ?? "未设置";
+        ComboText.Text = _pending?.ToString() ?? Messages.HotkeyUnset;
         Loaded += (_, _) => ComboText.Focus();
     }
 
