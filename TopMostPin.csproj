@@ -12,6 +12,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>
 
+    <!-- 四語言版本：由 -p:AppLang=zh-CN|zh-TW|en|ja 決定，預設簡體中文（#else 分支） -->
+    <AppLang Condition="'$(AppLang)' == ''">zh-CN</AppLang>
+    <DefineConstants Condition="'$(AppLang)' == 'zh-TW'">$(DefineConstants);LANG_ZH_TW</DefineConstants>
+    <DefineConstants Condition="'$(AppLang)' == 'en'">$(DefineConstants);LANG_EN</DefineConstants>
+    <DefineConstants Condition="'$(AppLang)' == 'ja'">$(DefineConstants);LANG_JA</DefineConstants>
+
     <AssemblyName>TopMostPin</AssemblyName>
     <RootNamespace>TopMostPin</RootNamespace>
     <Version>1.0.0</Version>

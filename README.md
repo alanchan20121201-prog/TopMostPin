@@ -15,11 +15,28 @@
 - **提示即时出现**：用自绘浮窗而不是系统托盘气泡 —— 气泡在 Win11 上首次弹出常延迟 0.5~2 秒，且关掉系统通知后完全不显示
 - **轻量**：单文件 194 KB（框架依赖版），无第三方 UI 框架
 
+## 四种界面语言
+
+| EXE | 语言 |
+| --- | --- |
+| `publish/TopMostPin-zh-CN.exe` | 简体中文 |
+| `publish/TopMostPin-zh-TW.exe` | 繁體中文 |
+| `publish/TopMostPin-en.exe` | English |
+| `publish/TopMostPin-ja.exe` | 日本語 |
+
+四个版本共用同一份源码，语言在编译期由 `-p:AppLang=` 固定（对应 `Services/Messages.cs` 里的 `#if` 分支），运行时不判断系统区域、不加载附属资源。设置文件共用，换语言 exe 不会丢失快捷键设置。
+
+```powershell
+.\build-4lang.ps1   # 一次产出四个 EXE
+# 或单独编译一种
+dotnet publish TopMostPin.csproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=true -p:AppLang=ja
+```
+
 ## 快速开始
 
 直接用现成的 exe
 
-仓库里的 `publish/TopMostPin.exe` 就是编译好的单文件版本，双击即可运行。
+仓库里的 `publish/` 下有四个语言版本的单文件 exe，选择对应语言的双击即可运行。
 
 > ⚠️ 这是**框架依赖**版本，需要机器上装有 **.NET 8 Desktop Runtime**（不是 SDK，只有运行时即可）。
 > 没装的话双击会提示找不到运行时，去这里下载：<https://dotnet.microsoft.com/download/dotnet/8.0> → ".NET Desktop Runtime 8.0.x"
